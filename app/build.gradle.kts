@@ -28,6 +28,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+            buildConfigField("String","BASE_URL","\"https://api.themoviedb.org/\"")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
