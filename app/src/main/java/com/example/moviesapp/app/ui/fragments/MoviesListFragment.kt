@@ -9,7 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviesapp.app.adapter.AllMoviesAdapter
+import com.example.moviesapp.app.viewmodel.LocalViewModel
 import com.example.moviesapp.app.viewmodel.MoviesViewModel
+import com.example.moviesapp.data.local.MoviesEntity
+import com.example.moviesapp.data.model.MovieId
 import com.example.moviesapp.data.model.Movies
 import com.example.moviesapp.databinding.MovieslistfragmentBinding
 import com.example.moviesapp.utils.Resource
@@ -21,9 +24,11 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
 
   private lateinit var binding: MovieslistfragmentBinding
     private val movieViewModel: MoviesViewModel by viewModels()
-
+    private val localViewModel: LocalViewModel by viewModels()
+    private var moviesId = mutableListOf<MovieId>()
+    private var id = 0
     private val moviesAdapter : AllMoviesAdapter by lazy {
-        AllMoviesAdapter(this)
+        AllMoviesAdapter(this,moviesId)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +41,8 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
          productRecylerview()
-        getProductCallBack()
+         getAllMoviesFromLocalDatabase()
+         getProductCallBack()
     }
 
     private fun productRecylerview() {
@@ -76,9 +82,40 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
 
 
     override fun onItemClicked(result: Movies) {
-             result.let {
+
                  val action= MoviesListFragmentDirections.actionMoviesListFragmentToMovieDetailsFragment(result)
                  findNavController().navigate(action)
-             }
+
+    }
+
+    override fun addToFavorite(result: Movies) {
+        id+=1
+        val movieEntity = MoviesEntity(
+            id,
+            result.id,
+            result.original_language,
+            result.title,
+            result.overview,
+            result.popularity,
+            result.poster_path,
+            result.release_date,
+            result.title,
+            result.video,
+            result.vote_average,
+            result.vote_count
+        )
+        localViewModel.insertMovies(movieEntity)
+
+        Snackbar.make(requireView(),"data saved Successfully",Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun getAllMoviesFromLocalDatabase() {
+        localViewModel.allMovies.observe(viewLifecycleOwner) {
+            it.forEach {
+                val  movieId=MovieId(it.movieId)
+                moviesId.add(movieId)
+            }
+            id +=it.size
+        }
     }
 }
