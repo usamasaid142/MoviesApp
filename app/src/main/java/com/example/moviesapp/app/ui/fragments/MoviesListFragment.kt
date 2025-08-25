@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviesapp.app.adapter.AllMoviesAdapter
 import com.example.moviesapp.app.viewmodel.MoviesViewModel
@@ -75,7 +76,9 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
 
 
     override fun onItemClicked(result: Movies) {
-//        val action=MoviesListFragmentDirections.actionMoviesListFragmentToMovieDetailsFragment(result)
-//        findNavController().navigate(action)
+             result.let {
+                 val action= MoviesListFragmentDirections.actionMoviesListFragmentToMovieDetailsFragment(result)
+                 findNavController().navigate(action)
+             }
     }
 }
