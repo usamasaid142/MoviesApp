@@ -129,6 +129,7 @@
                 android:layout_height="35dp"
                 android:layout_margin="5dp"
                 android:padding="5dp"
+                android:visibility="gone"
                 android:src="@drawable/ic_fav"
                 android:background="@drawable/bg_add_movies"
                 app:layout_constraintBottom_toBottomOf="parent"

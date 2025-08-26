@@ -38,10 +38,10 @@ class AllMoviesAdapter (val listener:IMoviesListener,val moviesList:List<MovieId
         }
         if (moviesList.any { it.id == result.id }) {
             holder.binding.ivFav.visibility = View.VISIBLE
-            holder.binding.fab.visibility = View.GONE
+          //  holder.binding.fab.visibility = View.GONE
         } else {
             holder.binding.ivFav.visibility = View.GONE
-            holder.binding.fab.visibility = View.VISIBLE
+           // holder.binding.fab.visibility = View.VISIBLE
         }
     }
     class ViewHolder(itemBinding: ItemLayoutMoviesBinding) :

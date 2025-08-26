@@ -19,6 +19,7 @@ import com.example.moviesapp.utils.Resource
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
 
@@ -42,8 +43,10 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
         super.onViewCreated(view, savedInstanceState)
          productRecylerview()
          getAllMoviesFromLocalDatabase()
-         getProductCallBack()
+         checkInternet()
+         getMoviesCallBack()
     }
+
 
     private fun productRecylerview() {
         binding.rvMovies.apply {
@@ -53,7 +56,7 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
         }
     }
 
-    private fun getProductCallBack() {
+    private fun getMoviesCallBack() {
         movieViewModel.allMoviesResponse.observe(
             viewLifecycleOwner
         ) { response ->
@@ -76,8 +79,7 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
                 }
             }
         }
-
-        movieViewModel.getAllMovies()
+         movieViewModel.getAllMovies()
     }
 
 
@@ -105,7 +107,6 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
             result.vote_count
         )
         localViewModel.insertMovies(movieEntity)
-
         Snackbar.make(requireView(),"data saved Successfully",Snackbar.LENGTH_SHORT).show()
     }
 
@@ -116,6 +117,16 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
                 moviesId.add(movieId)
             }
             id +=it.size
+        }
+
+    }
+
+    private fun checkInternet() {
+        movieViewModel.internetConnection.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                binding.progressBar.visibility = View.GONE
+                Snackbar.make(requireView(), "No Internet Connection", Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 }

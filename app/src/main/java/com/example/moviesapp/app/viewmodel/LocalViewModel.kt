@@ -16,6 +16,13 @@ class LocalViewModel @Inject constructor(private val repo: DataBaseRepo):ViewMod
     fun insertMovies(result: MoviesEntity)=viewModelScope.launch(Dispatchers.IO) {
         repo.insertMovies(result)
     }
+
+    fun deleteMovies(result: MoviesEntity)=viewModelScope.launch(Dispatchers.IO) {
+        repo.deleteMovies(result)
+    }
+    fun deleteMovieById(movieId: Int?)=viewModelScope.launch(Dispatchers.IO) {
+        repo.deleteMovieById(movieId)
+    }
     val allMovies: LiveData<List<MoviesEntity>> = repo.getMovies()
 
 }

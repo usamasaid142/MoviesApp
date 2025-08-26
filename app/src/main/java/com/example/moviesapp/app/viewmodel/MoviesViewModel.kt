@@ -1,6 +1,5 @@
 package com.example.moviesapp.app.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,11 +11,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import timber.log.Timber
 import javax.inject.Inject
 @HiltViewModel
 class MoviesViewModel @Inject constructor(private val repo: MoviesRepository):ViewModel() {
 
     val allMoviesResponse= MutableLiveData<Resource<GetMoviesResponse>>()
+    val internetConnection = MutableLiveData<String?>()
 
 
     fun getAllMovies()=viewModelScope.launch(Dispatchers.IO+handler) {
@@ -25,16 +26,23 @@ class MoviesViewModel @Inject constructor(private val repo: MoviesRepository):Vi
         allMoviesResponse.postValue(response.let { handleGetAllProducts(it) })
     }
 
-    private fun handleGetAllProducts(response: Response<GetMoviesResponse>): Resource<GetMoviesResponse>? {
-        if (response.isSuccessful){
+    private fun handleGetAllProducts(response: Response<GetMoviesResponse>): Resource<GetMoviesResponse> {
+        return if (response.isSuccessful) {
             response.body()?.let {
-                return Resource.sucess(it)
-            }
+                Resource.sucess(it)
+            } ?: Resource.Error("Empty body")
+        } else {
+            Resource.Error(response.message())
         }
-        return Resource.Error(response.message())
     }
 
-    val handler = CoroutineExceptionHandler { _, exception ->
-        Log.e("exception", "exception:${exception.message.toString()}")
+
+    fun getError(error: String?){
+        internetConnection.postValue(error)
+    }
+
+    private val handler = CoroutineExceptionHandler { _, exception ->
+        Timber.e(exception, "exception occurred")
+        getError(exception.message ?: "Unknown error")
     }
 }
