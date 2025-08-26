@@ -13,7 +13,6 @@ interface MoviesDao {
     suspend fun insertMovies(result: MoviesEntity)
     @Delete
     suspend fun deleteMovies(result: MoviesEntity)
-
     @Query("DELETE FROM movie_table WHERE id = :movieId")
     suspend fun deleteMovieById(movieId: Int?)
     @Query(" select * from movie_table")

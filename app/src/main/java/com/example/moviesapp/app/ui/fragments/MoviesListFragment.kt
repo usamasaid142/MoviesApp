@@ -111,12 +111,14 @@ class MoviesListFragment : Fragment(), AllMoviesAdapter.IMoviesListener {
     }
 
     private fun getAllMoviesFromLocalDatabase() {
-        localViewModel.allMovies.observe(viewLifecycleOwner) {
-            it.forEach {
-                val  movieId=MovieId(it.movieId)
+        localViewModel.allMovies.observe(viewLifecycleOwner) { movies ->
+            moviesId.clear()
+            movies.forEach {
+                val movieId = MovieId(it.movieId)
                 moviesId.add(movieId)
             }
-            id +=it.size
+            id = movies.size
+            moviesAdapter.submitList(moviesAdapter.currentList)
         }
 
     }

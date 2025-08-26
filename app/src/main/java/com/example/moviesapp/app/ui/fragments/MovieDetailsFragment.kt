@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.moviesapp.app.viewmodel.LocalViewModel
 import com.example.moviesapp.data.local.MoviesEntity
-import com.example.moviesapp.data.model.MovieId
 import com.example.moviesapp.databinding.MovieDetailsfragmentBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,16 +77,16 @@ class MovieDetailsFragment : Fragment() {
 
     }
     private fun getAllMoviesFromLocalDatabase() {
-        localViewModel.allMovies.observe(viewLifecycleOwner) {
-            it.forEach {
-                val  movieId=MovieId(it.movieId)
-                if (movieId.id==args.movies?.id){
-                    id=it.id
-                    binding.ivFav.visibility= View.VISIBLE
-                    binding.fab.visibility= View.GONE
-                }
+        localViewModel.allMovies.observe(viewLifecycleOwner) { movies ->
+            val movie = movies.find { it.movieId == args.movies?.id }
+            if (movie != null) {
+                id = movie.id
+                binding.ivFav.visibility = View.VISIBLE
+                binding.fab.visibility = View.GONE
+            } else {
+                binding.ivFav.visibility = View.GONE
+                binding.fab.visibility = View.VISIBLE
             }
-
         }
 
     }
@@ -109,6 +108,10 @@ class MovieDetailsFragment : Fragment() {
         )
         localViewModel.deleteMovies(movieEntity)
         Snackbar.make(requireView(),"movie deleted Successfully",Snackbar.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            delay(2000)
+            findNavController().navigateUp()
+        }
     }
 
 }
